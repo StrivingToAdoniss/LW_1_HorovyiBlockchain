@@ -27,7 +27,10 @@ class Blockchain{
 
         int proofOfWork(int lastProof);
 
-        size_t hashBlock(Block block);
+        int getChainSize();
+
+        std::string hashBlock(Block block);
+
 
 
 };

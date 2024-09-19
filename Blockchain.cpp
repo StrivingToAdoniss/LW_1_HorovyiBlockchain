@@ -34,7 +34,7 @@ bool Blockchain::isProofValid(int lastProof, int proof) {
     );
 
     // Take the last three characters of the hash
-    std::string proofTest = hash.substr(hash.size() - 3);
+    std::string proofTest = hash.substr(hash.size() - 2);
 
     // Return true if the last three characters of the hash are "02"
     return proofTest == "02";
@@ -81,9 +81,10 @@ int Blockchain::proofOfWork(int lastProof){
             usedNonces.push_back(tempNonce);
             nonce = tempNonce;
             nonceCounter++;
+            //std::cout << "New nouce: " << nonce << std::endl;
         }
 
-            std::cout << "New nouce: " << nonce << std::endl;
+
         
 
 
@@ -94,10 +95,29 @@ int Blockchain::proofOfWork(int lastProof){
     return nonce;
 }
 
-size_t Blockchain::hashBlock(Block block){
-    std::hash<std::string> stringHasher;
+int Blockchain::getChainSize() {
+    return this->getChain().size();
 
-    size_t blockHash = stringHasher(std::to_string(block.getIndex())+ std::to_string(block.getTimestamp()) + std::to_string(block.getProof()) + block.getPrevHash());
+}
 
-    return blockHash;
+std::string Blockchain::hashBlock(Block block) {
+    // Serialize the block data
+    std::string blockData = std::to_string(block.getIndex()) +
+        std::to_string(block.getTimestamp()) +
+        std::to_string(block.getProof()) +
+        block.getPrevHash();
+
+    // Compute SHA-256 hash
+    std::string hash;
+    CryptoPP::SHA256 sha256;
+    CryptoPP::StringSource ss(blockData, true,
+        new CryptoPP::HashFilter(sha256,
+            new CryptoPP::HexEncoder(
+                new CryptoPP::StringSink(hash),
+                false // Lowercase hex digits
+            )
+        )
+    );
+
+    return hash;
 }
