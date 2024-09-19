@@ -3,25 +3,28 @@
 #include <vector>
 #include "Transaction.h"
 
-class Block{
+namespace HorovyiBlockchain {
+
+    class Block {
     private:
         int index;
         time_t timestamp;
         std::vector<Transaction> transactions;
         int proof;
-        std::string prevHash; 
+        std::string prevHash;
 
     public:
         Block(int index, int proof, std::string prevHash, std::vector<Transaction> transactions);
 
-        int getIndex();
+        int getIndex() const;
 
-        time_t getTimestamp();
+        time_t getTimestamp() const;
 
-        std::vector<Transaction> getTransactions();
+        std::vector<Transaction> getTransactions() const;
 
-        int getProof();
+        int getProof() const;
 
-        std::string getPrevHash();
+        std::string getPrevHash() const;
 
-};
+    };
+}

@@ -135,11 +135,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Application.h" />
     <ClInclude Include="Block.h" />
     <ClInclude Include="Blockchain.h" />
     <ClInclude Include="Transaction.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Application.cpp" />
     <ClCompile Include="Block.cpp" />
     <ClCompile Include="Blockchain.cpp" />
     <ClCompile Include="main.cpp" />

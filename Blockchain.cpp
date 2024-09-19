@@ -5,119 +5,116 @@
 #include <vector>
 #include <algorithm>
 #include <string>
-#include <iomanip>
 #include <sstream>
 #include "sha.h"
 #include "hex.h"
 #include "filters.h"
 
-Blockchain::Blockchain(size_t hash, std::string prevHash){
-    newBlock(hash, prevHash);
-    srand(time(0));
-}
+namespace HorovyiBlockchain {
 
-bool Blockchain::isProofValid(int lastProof, int proof) {
-    // Concatenate lastProof and proof into a string
-    std::string guessString = std::to_string(lastProof) + std::to_string(proof);
-
-    // Compute SHA-256 hash of guessString using Crypto++
-    std::string hash;
-    CryptoPP::SHA256 sha256;
-
-    CryptoPP::StringSource ss(guessString, true,
-        new CryptoPP::HashFilter(sha256,
-            new CryptoPP::HexEncoder(
-                new CryptoPP::StringSink(hash),
-                false // Set to false to get lowercase hex digits
-            )
-        )
-    );
-
-    // Take the last three characters of the hash
-    std::string proofTest = hash.substr(hash.size() - 2);
-
-    // Return true if the last three characters of the hash are "02"
-    return proofTest == "02";
-}
-
-std::vector<Block> Blockchain::getChain(){
-    return this->chain;
-}
-
-std::vector<Transaction> Blockchain::getCurrentTransactions(){
-    return this->currentTransactions;
-}
-
-Block Blockchain::newBlock(int proof, std::string prevHash){
-
-    Block block(this->getLastBlockIndex() + 1, proof, prevHash, this->getCurrentTransactions());
-    this->currentTransactions.clear();
-    this->chain.push_back(block);
-
-    return block;
-}
-
-int Blockchain::newTransaction(std::string sender, std::string recipient, int amount){
-    this->currentTransactions.push_back(Transaction(sender, recipient, amount));
-
-    return this->getLastBlockIndex() + 1;
-}
-
-int Blockchain::getLastBlockIndex(){
-    return this->chain.size() - 1;
-}
-
-int Blockchain::proofOfWork(int lastProof){
-    int nonce = 2402;
-    int tempNonce = nonce;
-    int nonceCounter = 0;
-    std::vector<int> usedNonces;
-
-    while(!isProofValid(lastProof, nonce)){
-
-        tempNonce = rand() % 22006;
-
-        if (std::find(usedNonces.begin(), usedNonces.end(), tempNonce) == usedNonces.end()){
-            usedNonces.push_back(tempNonce);
-            nonce = tempNonce;
-            nonceCounter++;
-            //std::cout << "New nouce: " << nonce << std::endl;
-        }
-
-
-        
-
-
+    Blockchain::Blockchain(size_t hash, std::string prevHash) {
+        newBlock(hash, prevHash);
     }
 
-    std::cout << "Nonce: " << nonce << " was found after " << nonceCounter << " tries!" << std::endl;
+    bool Blockchain::isProofValid(int lastProof, int proof) const {
+        // Concatenate lastProof and proof into a string
+        std::string guessString = std::to_string(lastProof) + std::to_string(proof);
 
-    return nonce;
-}
+        // Compute SHA-256 hash of guessString using Crypto++
+        std::string hash;
+        CryptoPP::SHA256 sha256;
 
-int Blockchain::getChainSize() {
-    return this->getChain().size();
-
-}
-
-std::string Blockchain::hashBlock(Block block) {
-    // Serialize the block data
-    std::string blockData = std::to_string(block.getIndex()) +
-        std::to_string(block.getTimestamp()) +
-        std::to_string(block.getProof()) +
-        block.getPrevHash();
-
-    // Compute SHA-256 hash
-    std::string hash;
-    CryptoPP::SHA256 sha256;
-    CryptoPP::StringSource ss(blockData, true,
-        new CryptoPP::HashFilter(sha256,
-            new CryptoPP::HexEncoder(
-                new CryptoPP::StringSink(hash),
-                false // Lowercase hex digits
+        CryptoPP::StringSource ss(guessString, true,
+            new CryptoPP::HashFilter(sha256,
+                new CryptoPP::HexEncoder(
+                    new CryptoPP::StringSink(hash),
+                    false // Set to false to get lowercase hex digits
+                )
             )
-        )
-    );
+        );
 
-    return hash;
+        // Take the last two characters of the hash
+        std::string proofTest = hash.substr(hash.size() - 2);
+
+        // Return true if the last two characters of the hash are "02"
+        return proofTest == "02";
+    }
+
+    const std::vector<Block>& Blockchain::getChain() const {
+        return this->chain;
+    }
+
+    const std::vector<Transaction>& Blockchain::getCurrentTransactions() const {
+        return this->currentTransactions;
+    }
+
+    Block Blockchain::newBlock(int proof, const std::string& prevHash) {
+        Block block(this->getLastBlockIndex() + 1, proof, prevHash, this->currentTransactions);
+        this->currentTransactions.clear();
+        this->chain.push_back(block);
+
+        return block;
+    }
+
+    int Blockchain::newTransaction(const Transaction& transaction) {
+        this->currentTransactions.push_back(transaction);
+
+        return this->getLastBlockIndex() + 1;
+    }
+
+    int Blockchain::getLastBlockIndex() const {
+        if (this->chain.empty()) {
+            return -1;
+        }
+        return static_cast<int>(this->chain.size()) - 1;
+    }
+
+    ProofOfWorkResult Blockchain::proofOfWork(int lastProof) {
+        int nonce = 0;
+        int nonceCounter = 0;
+
+        while (!isProofValid(lastProof, nonce)) {
+            nonce++;
+            nonceCounter++;
+        }
+
+        ProofOfWorkResult result;
+        result.nonce = nonce;
+        result.iterations = nonceCounter;
+
+        return result;
+    }
+
+    int Blockchain::getChainSize() const {
+        return static_cast<int>(this->chain.size());
+    }
+
+    std::string Blockchain::hashBlock(const Block& block) const {
+        // Serialize the block data
+        std::string blockData = std::to_string(block.getIndex()) +
+            std::to_string(block.getTimestamp()) +
+            std::to_string(block.getProof()) +
+            block.getPrevHash();
+
+        // Serialize transactions
+        for (const auto& transaction : block.getTransactions()) {
+            blockData += transaction.getSender() +
+                transaction.getRecipient() +
+                std::to_string(transaction.getAmount());
+        }
+
+        // Compute SHA-256 hash
+        std::string hash;
+        CryptoPP::SHA256 sha256;
+        CryptoPP::StringSource ss(blockData, true,
+            new CryptoPP::HashFilter(sha256,
+                new CryptoPP::HexEncoder(
+                    new CryptoPP::StringSink(hash),
+                    false // Lowercase hex digits
+                )
+            )
+        );
+
+        return hash;
+    }
 }

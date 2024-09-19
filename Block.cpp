@@ -2,37 +2,39 @@
 #include <chrono>
 #include <ctime>    
 
+namespace HorovyiBlockchain {
 
-Block::Block(int index, int proof, std::string prevHash, std::vector<Transaction> transactions){
-    time_t start = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-    
-    this-> index = index;
-    this-> proof = proof;
-    this-> prevHash = prevHash;
-    this-> transactions = transactions;
+    Block::Block(int index, int proof, std::string prevHash, std::vector<Transaction> transactions) {
+        time_t start = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 
-    time_t end = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+        this->index = index;
+        this->proof = proof;
+        this->prevHash = prevHash;
+        this->transactions = transactions;
 
-    this->timestamp = end;
+        time_t end = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 
-}
+        this->timestamp = end;
 
-int Block::getIndex(){
-    return this->index;
-}
+    }
 
-time_t Block::getTimestamp(){
-    return this->timestamp;
-}
+    int Block::getIndex() const {
+        return this->index;
+    }
 
-std::vector<Transaction> Block::getTransactions(){
-    return this->transactions;
-}
+    time_t Block::getTimestamp() const {
+        return this->timestamp;
+    }
 
-int Block::getProof(){
-    return this->proof;
-}
+    std::vector<Transaction> Block::getTransactions() const {
+        return this->transactions;
+    }
 
-std::string Block::getPrevHash(){
-    return this->prevHash;
+    int Block::getProof() const {
+        return this->proof;
+    }
+
+    std::string Block::getPrevHash() const {
+        return this->prevHash;
+    }
 }

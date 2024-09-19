@@ -1,6 +1,9 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <iostream>
+
+namespace HorovyiBlockchain {
 
 class Transaction{
     private:
@@ -11,10 +14,14 @@ class Transaction{
     public:
         Transaction(std::string sender, std::string recipient, int amount);
 
-        std::string getSender();
+        std::string getSender() const;
 
-        std::string getRecipient();
+        std::string getRecipient() const;
 
-        int getAmount();
+        int getAmount() const;
 
 };
+
+std::ostream& operator<<(std::ostream& os, const Transaction& transaction);
+
+}
