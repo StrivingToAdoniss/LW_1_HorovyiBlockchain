@@ -9,6 +9,7 @@
 #include "sha.h"
 #include "hex.h"
 #include "filters.h"
+#include <random>
 
 namespace HorovyiBlockchain {
 
@@ -70,11 +71,17 @@ namespace HorovyiBlockchain {
     }
 
     ProofOfWorkResult Blockchain::proofOfWork(int lastProof) {
-        int nonce = 0;
         int nonceCounter = 0;
+        int nonce = 2402;
+        int maxNonce = 22005;
+
+        // Initialize random number generator
+        std::random_device rd;  // Seed generator
+        std::mt19937 gen(rd()); // Mersenne Twister engine
+        std::uniform_int_distribution<> dis(0, maxNonce); // Uniform distribution over the range of int
 
         while (!isProofValid(lastProof, nonce)) {
-            nonce++;
+            nonce = dis(gen);   // Generate a random nonce
             nonceCounter++;
         }
 
@@ -84,6 +91,7 @@ namespace HorovyiBlockchain {
 
         return result;
     }
+
 
     int Blockchain::getChainSize() const {
         return static_cast<int>(this->chain.size());

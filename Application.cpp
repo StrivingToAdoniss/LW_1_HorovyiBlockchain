@@ -5,7 +5,7 @@
 #include <iomanip>
 
 Application::Application(int blockAmount)
-    : blockchain(0, "Horovyi"), blockAmount(blockAmount) {
+    : blockchain(0, "Horovyi"), blockAmount(blockAmount) { // cтворюю генезис
     srand(static_cast<unsigned int>(time(0)));
 }
 
