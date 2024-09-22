@@ -17,28 +17,21 @@ namespace HorovyiBlockchain {
         newBlock(hash, prevHash);
     }
 
-    bool Blockchain::isProofValid(int lastProof, int proof) const {
-        // Concatenate lastProof and proof into a string
-        std::string guessString = std::to_string(lastProof) + std::to_string(proof);
+    IsProofValidResult Blockchain::isProofValid(int lastProof, int nonce) const {
 
-        // Compute SHA-256 hash of guessString using Crypto++
-        std::string hash;
-        CryptoPP::SHA256 sha256;
+        std::string guessString = std::to_string(lastProof) + std::to_string(nonce);
 
-        CryptoPP::StringSource ss(guessString, true,
-            new CryptoPP::HashFilter(sha256,
-                new CryptoPP::HexEncoder(
-                    new CryptoPP::StringSink(hash),
-                    false // Set to false to get lowercase hex digits
-                )
-            )
-        );
+        std::string hash = computeSHA256(guessString);
 
         // Take the last two characters of the hash
         std::string proofTest = hash.substr(hash.size() - 2);
 
-        // Return true if the last two characters of the hash are "02"
-        return proofTest == "02";
+        IsProofValidResult result;
+        result.isValid = proofTest == "02";
+        result.proofTest = hash;
+
+        return result;
+
     }
 
     const std::vector<Block>& Blockchain::getChain() const {
@@ -74,20 +67,25 @@ namespace HorovyiBlockchain {
         int nonceCounter = 0;
         int nonce = 2402;
         int maxNonce = 22005;
+        IsProofValidResult validationResult;
 
-        // Initialize random number generator
         std::random_device rd;  // Seed generator
         std::mt19937 gen(rd()); // Mersenne Twister engine
         std::uniform_int_distribution<> dis(0, maxNonce); // Uniform distribution over the range of int
 
-        while (!isProofValid(lastProof, nonce)) {
-            nonce = dis(gen);   // Generate a random nonce
+        validationResult = isProofValid(lastProof, nonce);
+        nonceCounter++;
+
+        while (!validationResult.isValid) {
+            nonce = dis(gen); // Generate a new nonce
+            validationResult = isProofValid(lastProof, nonce);
             nonceCounter++;
         }
 
         ProofOfWorkResult result;
         result.nonce = nonce;
         result.iterations = nonceCounter;
+        result.proofTest = validationResult.proofTest;
 
         return result;
     }
@@ -105,20 +103,26 @@ namespace HorovyiBlockchain {
             block.getPrevHash();
 
         // Serialize transactions
-        for (const auto& transaction : block.getTransactions()) {
+        for (const Transaction& transaction : block.getTransactions()) {
             blockData += transaction.getSender() +
                 transaction.getRecipient() +
                 std::to_string(transaction.getAmount());
         }
 
-        // Compute SHA-256 hash
+        std::string hash = computeSHA256(blockData);
+
+        return hash;
+    }
+
+    std::string Blockchain::computeSHA256(const std::string& data) const {
         std::string hash;
         CryptoPP::SHA256 sha256;
-        CryptoPP::StringSource ss(blockData, true,
+
+        CryptoPP::StringSource ss(data, true,
             new CryptoPP::HashFilter(sha256,
                 new CryptoPP::HexEncoder(
                     new CryptoPP::StringSink(hash),
-                    false // Lowercase hex digits
+                    false // Use lowercase hex digits
                 )
             )
         );

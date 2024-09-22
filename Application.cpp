@@ -111,6 +111,7 @@ void Application::mineBlocks() {
         HorovyiBlockchain::Block newBlock = blockchain.newBlock(powResult.nonce, prevHash);
 
         std::cout << "Block " << i + 1 << " created" << std::endl;
-        std::cout << "Nonce: " << powResult.nonce << " was found after " << powResult.iterations << " tries!\n" << std::endl;
+        std::cout << "Nonce: " << powResult.nonce << " was found after " << powResult.iterations << " tries!" << std::endl;
+        std::cout << "Proof: " << powResult.proofTest << "\n" << std::endl;
     }
 }
