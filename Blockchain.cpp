@@ -1,11 +1,10 @@
+// Blockchain.cpp
+
 #include "Blockchain.h"
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
-#include <vector>
 #include <algorithm>
-#include <string>
-#include <sstream>
 #include "sha.h"
 #include "hex.h"
 #include "filters.h"
@@ -13,88 +12,72 @@
 
 namespace HorovyiBlockchain {
 
-    Blockchain::Blockchain(size_t hash, std::string prevHash) {
-        newBlock(hash, prevHash);
+    // Constructor: Initializes the blockchain with a genesis block
+    Blockchain::Blockchain(size_t hash, const std::string& prevHash) {
+        // Create the genesis block
+        Block genesisBlock(0, static_cast<int>(hash), prevHash, this->currentTransactions);
+        this->currentTransactions.clear();
+        addBlock(genesisBlock);
     }
 
-    IsProofValidResult Blockchain::isProofValid(int lastProof, int nonce) const {
+    // Method to add a block to the chain
+    void Blockchain::addBlock(const Block& block) {
+        this->chain.push_back(block);
+    }
 
-        std::string guessString = std::to_string(lastProof) + std::to_string(nonce);
+    // Method to check if a block's proof is valid
+    IsProofValidResult Blockchain::isProofValid(const Block& block) const {
+        // Compute the hash of the block
+        std::string hash = hashBlock(block);
 
-        std::string hash = computeSHA256(guessString);
-
-        // Take the last two characters of the hash
+        // Extract the last two characters of the hash
         std::string proofTest = hash.substr(hash.size() - 2);
 
+        // Check if the proof meets the required condition
+        bool isValid = (proofTest == "02");
+
+        // Prepare the result
         IsProofValidResult result;
-        result.isValid = proofTest == "02";
+        result.isValid = isValid;
         result.proofTest = hash;
 
         return result;
-
     }
 
+    // Method to add a new transaction
+    int Blockchain::newTransaction(const Transaction& transaction) {
+        this->currentTransactions.push_back(transaction);
+        return this->getLastBlockIndex() + 1;
+    }
+
+    void Blockchain::clearTransactions() {
+        this->currentTransactions.clear();
+    }
+
+    // Getter for the chain
     const std::vector<Block>& Blockchain::getChain() const {
         return this->chain;
     }
 
+    // Getter for current transactions
     const std::vector<Transaction>& Blockchain::getCurrentTransactions() const {
         return this->currentTransactions;
     }
 
-    Block Blockchain::newBlock(int proof, const std::string& prevHash) {
-        Block block(this->getLastBlockIndex() + 1, proof, prevHash, this->currentTransactions);
-        this->currentTransactions.clear();
-        this->chain.push_back(block);
-
-        return block;
-    }
-
-    int Blockchain::newTransaction(const Transaction& transaction) {
-        this->currentTransactions.push_back(transaction);
-
-        return this->getLastBlockIndex() + 1;
-    }
-
+    // Method to get the last block's index
     int Blockchain::getLastBlockIndex() const {
         if (this->chain.empty()) {
-            return -1;
+            return -1; // Indicates that the chain is empty
         }
         return static_cast<int>(this->chain.size()) - 1;
     }
 
-    ProofOfWorkResult Blockchain::proofOfWork(int lastProof) {
-        int nonceCounter = 0;
-        int nonce = 2402;
-        int maxNonce = 22005;
-        IsProofValidResult validationResult;
-
-        std::random_device rd;  // Seed generator
-        std::mt19937 gen(rd()); // Mersenne Twister engine
-        std::uniform_int_distribution<> dis(0, maxNonce); // Uniform distribution over the range of int
-
-        validationResult = isProofValid(lastProof, nonce);
-        nonceCounter++;
-
-        while (!validationResult.isValid) {
-            nonce = dis(gen); // Generate a new nonce
-            validationResult = isProofValid(lastProof, nonce);
-            nonceCounter++;
-        }
-
-        ProofOfWorkResult result;
-        result.nonce = nonce;
-        result.iterations = nonceCounter;
-        result.proofTest = validationResult.proofTest;
-
-        return result;
-    }
-
-
+    // Method to get the size of the chain
     int Blockchain::getChainSize() const {
         return static_cast<int>(this->chain.size());
     }
 
+    // Method to hash a block
     std::string Blockchain::hashBlock(const Block& block) const {
         // Serialize the block data
         std::string blockData = std::to_string(block.getIndex()) +
@@ -109,11 +92,13 @@ namespace HorovyiBlockchain {
                 std::to_string(transaction.getAmount());
         }
 
+        // Compute SHA-256 hash
         std::string hash = computeSHA256(blockData);
 
         return hash;
     }
 
+    // Helper method to compute SHA-256 hash
     std::string Blockchain::computeSHA256(const std::string& data) const {
         std::string hash;
         CryptoPP::SHA256 sha256;
@@ -129,4 +114,5 @@ namespace HorovyiBlockchain {
 
         return hash;
     }
+
 }

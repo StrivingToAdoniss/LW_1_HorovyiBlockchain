@@ -18,6 +18,8 @@ namespace HorovyiBlockchain {
 
     }
 
+    Block::Block(){}
+
     int Block::getIndex() const {
         return this->index;
     }

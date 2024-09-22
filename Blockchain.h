@@ -6,12 +6,6 @@
 
 namespace HorovyiBlockchain {
 
-    struct ProofOfWorkResult {
-        int nonce;
-        int iterations;
-        std::string proofTest;
-    };
-
     struct IsProofValidResult {
         bool isValid;
         std::string proofTest;
@@ -24,16 +18,16 @@ namespace HorovyiBlockchain {
         std::string computeSHA256(const std::string& data) const;
 
     public:
-        Blockchain(size_t hash, std::string prevHash);
-        IsProofValidResult isProofValid(int lastProof, int proof) const;
+        Blockchain(size_t hash, const std::string& prevHash);
+        IsProofValidResult isProofValid(const Block& block) const;
         const std::vector<Block>& getChain() const;
         const std::vector<Transaction>& getCurrentTransactions() const;
-        Block newBlock(int proof, const std::string& prevHash);
+        void addBlock(const Block& block);
         int newTransaction(const Transaction& transaction);
         int getLastBlockIndex() const;
-        ProofOfWorkResult proofOfWork(int lastProof);
         int getChainSize() const;
         std::string hashBlock(const Block& block) const;
+        void clearTransactions();
 
     };
 }

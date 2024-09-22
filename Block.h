@@ -16,6 +16,8 @@ namespace HorovyiBlockchain {
     public:
         Block(int index, int proof, std::string prevHash, std::vector<Transaction> transactions);
 
+        Block();
+
         int getIndex() const;
 
         time_t getTimestamp() const;

@@ -1,7 +1,7 @@
 ﻿#include "Application.h"
 
 int main() {
-    int blockAmount = 10;
+    int blockAmount = 10; // block amount(without the genesis block)
     Application app(blockAmount);
     app.run();
 

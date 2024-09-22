@@ -14,6 +14,8 @@ class Transaction{
     public:
         Transaction(std::string sender, std::string recipient, int amount);
 
+        Transaction();
+
         std::string getSender() const;
 
         std::string getRecipient() const;

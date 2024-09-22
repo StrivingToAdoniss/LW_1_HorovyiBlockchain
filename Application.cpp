@@ -5,7 +5,7 @@
 #include <iomanip>
 
 Application::Application(int blockAmount)
-    : blockchain(0, "Horovyi"), blockAmount(blockAmount) { // cтворюю генезис
+    : blockchain(0, "Horovyi"), blockAmount(blockAmount) {
     srand(static_cast<unsigned int>(time(0)));
 }
 
@@ -13,7 +13,7 @@ void Application::run() {
     std::cout << "Program started!" << std::endl;
     std::cout << "Blockchain created!\n" << std::endl;
 
-    mineBlocks();
+    mineBlocks(blockAmount);
     printChain();
 }
 
@@ -97,21 +97,87 @@ void Application::printChain() {
 }
 
 
-void Application::mineBlocks() {
+bool Application::isChainEmpty() const {
+    return blockchain.getChain().empty();
+}
+
+void Application::initializeMining(int blockIndex, std::string& prevHash, HorovyiBlockchain::Transaction& newTx) {
+    // Retrieve the last block
+    const HorovyiBlockchain::Block& lastBlock = blockchain.getChain().back();
+    prevHash = blockchain.hashBlock(lastBlock);
+
+    // Generate a new transaction
+    newTx = genRanTransaction();
+    blockchain.newTransaction(newTx);
+}
+
+bool Application::performProofOfWork(int blockIndex, const std::string& prevHash, HorovyiBlockchain::Transaction& newTx, HorovyiBlockchain::Block& minedBlock, int& nonce, int& nonceCounter, int maxNonce) {
+    // Initialize proof-of-work variables
+    nonceCounter = 0;
+    nonce = 2402; // Starting nonce value
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dis(0, maxNonce);
+
+    bool found = false;
+
+    while (!found && nonceCounter < maxNonce) {
+        // Generate a new nonce
+        nonce = dis(gen);
+        nonceCounter++;
+
+        // Create a new block with the current nonce
+        HorovyiBlockchain::Block candidateBlock(blockIndex, nonce, prevHash, blockchain.getCurrentTransactions());
+
+        // Check if the proof is valid
+        HorovyiBlockchain::IsProofValidResult validationResult = blockchain.isProofValid(candidateBlock);
+
+        if (validationResult.isValid) {
+            // Add the valid block to the chain
+            blockchain.addBlock(candidateBlock);
+
+            // Clear current transactions as they are now included in the block
+            blockchain.clearTransactions();
+
+            minedBlock = candidateBlock;
+
+            // Output mining details
+            printMiningDetails(blockIndex, nonce, nonceCounter);
+
+            found = true;
+        }
+    }
+
+    return found;
+}
+
+void Application::printMiningDetails(int blockIndex, int nonce, int nonceCounter) {
+    std::cout << "Block " << blockIndex << " created" << std::endl;
+    std::cout << "Nonce: " << nonce << " was found after " << nonceCounter << " tries!\n" << std::endl;
+}
+
+void Application::mineBlocks(int blockAmount) {
     for (int i = 0; i < blockAmount; i++) {
         std::cout << "Started mining block " << i + 1 << "..." << std::endl;
 
-        HorovyiBlockchain::Block lastBlock = blockchain.getChain().back();
-        int lastProof = lastBlock.getProof();
-        HorovyiBlockchain::ProofOfWorkResult powResult = blockchain.proofOfWork(lastProof);
-        std::string prevHash = blockchain.hashBlock(lastBlock);
+        if (isChainEmpty()) {
+            std::cout << "Error: Blockchain is empty. Cannot mine new block." << std::endl;
+            continue;
+        }
 
-        blockchain.newTransaction(genRanTransaction());
+        std::string prevHash;
+        HorovyiBlockchain::Transaction newTx;
+        initializeMining(i, prevHash, newTx);
 
-        HorovyiBlockchain::Block newBlock = blockchain.newBlock(powResult.nonce, prevHash);
+        HorovyiBlockchain::Block minedBlock;
+        int nonce = 0;
+        int nonceCounter = 0;
+        int maxNonce = 22005;
+        bool success = performProofOfWork(i + 1, prevHash, newTx, minedBlock, nonce, nonceCounter, maxNonce);
 
-        std::cout << "Block " << i + 1 << " created" << std::endl;
-        std::cout << "Nonce: " << powResult.nonce << " was found after " << powResult.iterations << " tries!" << std::endl;
-        std::cout << "Proof: " << powResult.proofTest << "\n" << std::endl;
+        if (!success) {
+            std::cout << "Failed to mine block " << i + 1 << " within " << maxNonce << " attempts." << std::endl;
+        }
     }
 }

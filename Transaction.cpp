@@ -8,6 +8,9 @@ namespace HorovyiBlockchain {
         this->amount = amount;
     }
 
+    Transaction::Transaction() {
+    }
+
     std::string Transaction::getSender() const {
         return this->sender;
     }
