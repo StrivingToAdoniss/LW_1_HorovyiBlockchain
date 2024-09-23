@@ -32,7 +32,7 @@ void Application::mineBlocks(int blockAmount) {
         HorovyiBlockchain::Block minedBlock;
         int nonce = 0;
         int nonceCounter = 0;
-        int maxNonce = 22005;
+        int maxNonce = this->maxNonce;
         bool success = true;
 
         std::string prevHash;
@@ -50,7 +50,7 @@ void Application::mineBlocks(int blockAmount) {
 void Application::initializeMining(int blockIndex, std::string& prevHash, HorovyiBlockchain::Transaction& newTx) {
     
     if (isChainEmpty()) {
-        prevHash = "Horovyi";
+        prevHash = this->genesisPrevCash;
     }
     else {
         const HorovyiBlockchain::Block& lastBlock = blockchain.getChain().back();
@@ -68,7 +68,7 @@ void Application::initializeMining(int blockIndex, std::string& prevHash, Horovy
 
 bool Application::performProofOfWork(int blockIndex, const std::string& prevHash, HorovyiBlockchain::Transaction& newTx, HorovyiBlockchain::Block& minedBlock, int& nonce, int& nonceCounter, int maxNonce) {
     nonceCounter = 0;
-    nonce = 2402; 
+    nonce = this->startingNonce;
 
     std::random_device rd;
     std::mt19937 gen(rd());

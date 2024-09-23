@@ -17,6 +17,8 @@ namespace HorovyiBlockchain {
         std::vector<Transaction> currentTransactions;
         std::string computeSHA256(const std::string& data) const;
 
+        const std::string isProofValidCriteria = "02";
+
     public:
         Blockchain(size_t hash, const std::string& prevHash);
         Blockchain();

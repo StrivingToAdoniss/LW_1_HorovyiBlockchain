@@ -12,6 +12,10 @@ private:
     int blockAmount;
     std::vector<std::string> users;
 
+    const int startingNonce = 2402;
+    const int maxNonce = 22005;
+    const std::string genesisPrevCash = "Horovyi";
+
 
     bool isChainEmpty() const;
     void initializeMining(int blockIndex, std::string& prevHash, HorovyiBlockchain::Transaction& newTx);

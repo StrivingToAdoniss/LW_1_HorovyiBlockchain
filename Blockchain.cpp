@@ -30,7 +30,7 @@ namespace HorovyiBlockchain {
 
         std::string proofTest = hash.substr(hash.size() - 2);
 
-        bool isValid = (proofTest == "02");
+        bool isValid = (proofTest == this->isProofValidCriteria);
 
         IsProofValidResult result;
         result.isValid = isValid;
