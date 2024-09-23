@@ -19,6 +19,7 @@ namespace HorovyiBlockchain {
 
     public:
         Blockchain(size_t hash, const std::string& prevHash);
+        Blockchain();
         IsProofValidResult isProofValid(const Block& block) const;
         const std::vector<Block>& getChain() const;
         const std::vector<Transaction>& getCurrentTransactions() const;

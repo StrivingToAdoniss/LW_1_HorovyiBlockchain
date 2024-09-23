@@ -7,29 +7,27 @@
 #include <string>
 
 class Application {
-public:
-    // Constructor
-    Application(int blockAmount);
-
-    // Method to run the application
-    void run();
-
 private:
-    // Helper methods for mining
+    HorovyiBlockchain::Blockchain blockchain;
+    int blockAmount;
+    std::vector<std::string> users;
+
+
     bool isChainEmpty() const;
     void initializeMining(int blockIndex, std::string& prevHash, HorovyiBlockchain::Transaction& newTx);
+    void mineBlocks(int blockAmount);
     bool performProofOfWork(int blockIndex, const std::string& prevHash, HorovyiBlockchain::Transaction& newTx, HorovyiBlockchain::Block& minedBlock, int& nonce, int& nonceCounter, int maxNonce);
 
-
-    // Other existing methods
-    void mineBlocks(int blockAmount);
     HorovyiBlockchain::Transaction genRanTransaction();
     void printTransactions(const std::vector<HorovyiBlockchain::Transaction>& transactions);
     void printMiningDetails(int blockIndex, int nonce, int nonceCounter);
     void printChain();
     void drawLine();
+    bool loadUsersFromFile(const std::string& filename);
 
-    HorovyiBlockchain::Blockchain blockchain;
-    int blockAmount;
+public:
+    Application(int blockAmount);
+
+    void run();
 };
 
