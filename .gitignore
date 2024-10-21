@@ -435,11 +435,6 @@ install_manifest.txt
 /~/.cache/
 
 # ------------------------------
-# Google Test
-# ------------------------------
-/external/googletest/build/
-
-# ------------------------------
 # Other temporary files
 # ------------------------------
 *~
