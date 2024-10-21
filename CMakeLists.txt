@@ -11,8 +11,15 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-# Include cryptopp-cmake
-add_subdirectory(external/cryptopp-cmake)
+include(FetchContent)
+
+FetchContent_Declare(
+    cryptopp-cmake_wrapper
+    GIT_REPOSITORY https://github.com/abdes/cryptopp-cmake.git
+    GIT_TAG CRYPTOPP_8_9_0
+)
+
+FetchContent_MakeAvailable( cryptopp-cmake_wrapper)
 
 # Add subdirectories
 add_subdirectory(src)
