@@ -5,6 +5,7 @@ set(APP_SOURCES
     Blockchain.cpp
     main.cpp
     Transaction.cpp
+    Server.cpp
 )
 
 # Create a library from your application code
