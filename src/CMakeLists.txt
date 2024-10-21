@@ -13,10 +13,16 @@ add_library(${projectName}_lib ${APP_SOURCES})
 # Include directories for the library
 target_include_directories(${projectName}_lib PUBLIC
     ${PROJECT_SOURCE_DIR}/include
+    ${asio_SOURCE_DIR}/asio/include
+    ${crow_SOURCE_DIR}/include
 )
 
 # Link Crypto++ to your library
-target_link_libraries(${projectName}_lib PUBLIC cryptopp::cryptopp)
+target_link_libraries(${projectName}_lib PUBLIC 
+    cryptopp::cryptopp
+    nlohmann_json::nlohmann_json
+
+)
 
 # Create the main executable
 add_executable(${projectName} main.cpp)
