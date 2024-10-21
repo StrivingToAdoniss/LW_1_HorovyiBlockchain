@@ -1,8 +1,8 @@
 #pragma once
 #include <vector>
 #include <string>
-#include "Block.h"
-#include "Transaction.h"
+#include "Block.hpp"
+#include "Transaction.hpp"
 
 namespace HorovyiBlockchain {
 

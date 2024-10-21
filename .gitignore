@@ -361,3 +361,102 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# ------------------------------
+# Compiled Object files
+# ------------------------------
+*.o
+*.obj
+*.lo
+*.la
+*.al
+*.rlib
+*.dll
+*.so
+*.dylib
+
+# ------------------------------
+# Compiled Dynamic libraries
+# ------------------------------
+*.dylib
+*.dll
+*.so
+*.dylib
+
+# ------------------------------
+# Compiled Static libraries
+# ------------------------------
+*.a
+*.lib
+
+# ------------------------------
+# Executables
+# ------------------------------
+*.exe
+*.out
+*.app
+*.iobj
+*.ipdb
+*.pdb
+*.idb
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# ------------------------------
+# Build directories
+# ------------------------------
+/build/
+/Build/
+/BUILD/
+
+# ------------------------------
+# CMake generated files
+# ------------------------------
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+CMakeScripts/
+Testing/
+CTestTestfile.cmake
+install_manifest.txt
+
+# ------------------------------
+# VS Code directories and files
+# ------------------------------
+.vscode/
+*.code-workspace
+
+# ------------------------------
+# GitHub Actions cache
+# ------------------------------
+/~/.cache/
+
+# ------------------------------
+# Google Test
+# ------------------------------
+/external/googletest/build/
+
+# ------------------------------
+# Other temporary files
+# ------------------------------
+*~
+*.swp
+*.swo
+*.tmp
+*.bak
+*.backup
+
+# ------------------------------
+# Logs and databases
+# ------------------------------
+*.log
+*.sql
+*.sqlite
+
+# ------------------------------
+# Documentation
+# ------------------------------
+/docs/build/

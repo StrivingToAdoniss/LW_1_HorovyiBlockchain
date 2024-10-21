@@ -1,4 +1,4 @@
-#include "Application.h"
+#include "Application.hpp"
 #include <iostream>
 #include <random>
 #include <ctime>
@@ -21,6 +21,14 @@ void Application::run() {
 
     mineBlocks(blockAmount);
     printChain();
+
+    waitForUserInput();
+}
+
+void Application::waitForUserInput() {
+    std::cout << "Press Enter to exit...";
+    std::string dummy;
+    std::getline(std::cin, dummy);
 }
 
 void Application::mineBlocks(int blockAmount) {

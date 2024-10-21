@@ -1,4 +1,4 @@
-﻿#include "Application.h"
+﻿#include "Application.hpp"
 
 int main() {
     int blockAmount = 10; // block amount(without the genesis block)

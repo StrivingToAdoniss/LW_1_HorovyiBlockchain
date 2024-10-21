@@ -1,13 +1,12 @@
 // Blockchain.cpp
 
-#include "Blockchain.h"
-#include <cstdlib>
+#include "Blockchain.hpp"
 #include <ctime>
 #include <iostream>
 #include <algorithm>
-#include "sha.h"
-#include "hex.h"
-#include "filters.h"
+#include <cryptopp/sha.h>
+#include <cryptopp/hex.h>
+#include <cryptopp/filters.h>
 #include <random>
 
 namespace HorovyiBlockchain {

@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include <vector>
-#include "Transaction.h"
+#include "Transaction.hpp"
 
 namespace HorovyiBlockchain {
 

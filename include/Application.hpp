@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Blockchain.h"
-#include "Transaction.h"
-#include "Block.h"
+#include "Blockchain.hpp"
+#include "Transaction.hpp"
+#include "Block.hpp"
 #include <vector>
 #include <string>
 
@@ -28,6 +28,8 @@ private:
     void printChain();
     void drawLine();
     bool loadUsersFromFile(const std::string& filename);
+
+    void waitForUserInput();
 
 public:
     Application(int blockAmount);
