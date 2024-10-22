@@ -3,9 +3,12 @@ set(APP_SOURCES
     Application.cpp
     Block.cpp
     Blockchain.cpp
+    CrowServer.cpp
     main.cpp
+    Miner.cpp
+    RandomTransactionGenerator.cpp
     Transaction.cpp
-    Server.cpp
+
 )
 
 # Create a library from your application code
@@ -25,6 +28,11 @@ target_link_libraries(${projectName}_lib PUBLIC
 
 )
 
+# Check if building on Windows and link Ws2_32 library
+if(WIN32)
+    target_link_libraries(${projectName}_lib PUBLIC Ws2_32 Mswsock)
+endif()
+
 # Create the main executable
 add_executable(${projectName} main.cpp)
 
@@ -38,3 +46,14 @@ add_custom_command(
         ${PROJECT_SOURCE_DIR}/assets/users.txt
         $<TARGET_FILE_DIR:${projectName}>
 )
+
+# Copy swagger.json to the build directory
+add_custom_command(
+    TARGET ${projectName}
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${CMAKE_SOURCE_DIR}/swagger.json
+        ${CMAKE_BINARY_DIR}/swagger.json
+    COMMENT "Copying swagger.json to build directory..."
+)
+

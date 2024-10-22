@@ -1,8 +1,11 @@
+// Application.hpp
+
 #pragma once
 
-#include "Blockchain.hpp"
 #include "Transaction.hpp"
-#include "Block.hpp"
+#include "Blockchain.hpp"
+#include "Miner.hpp"
+#include "CrowServer.hpp"
 #include <vector>
 #include <string>
 
@@ -16,24 +19,10 @@ private:
     const int maxNonce = 22005;
     const std::string genesisPrevCash = "Horovyi";
 
-
-    bool isChainEmpty() const;
-    void initializeMining(int blockIndex, std::string& prevHash, HorovyiBlockchain::Transaction& newTx);
-    void mineBlocks(int blockAmount);
-    bool performProofOfWork(int blockIndex, const std::string& prevHash, HorovyiBlockchain::Transaction& newTx, HorovyiBlockchain::Block& minedBlock, int& nonce, int& nonceCounter, int maxNonce);
-
-    HorovyiBlockchain::Transaction genRanTransaction();
-    void printTransactions(const std::vector<HorovyiBlockchain::Transaction>& transactions);
-    void printMiningDetails(int blockIndex, int nonce, int nonceCounter);
-    void printChain();
-    void drawLine();
     bool loadUsersFromFile(const std::string& filename);
-
-    void waitForUserInput();
+    HorovyiBlockchain::Transaction genRanTransaction();
 
 public:
     Application(int blockAmount);
-
     void run();
 };
-

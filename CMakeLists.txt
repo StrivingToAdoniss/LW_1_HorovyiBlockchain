@@ -56,5 +56,33 @@ FetchContent_MakeAvailable(json)
 
 FetchContent_MakeAvailable( cryptopp-cmake_wrapper)
 
-# Add subdirectories
+# Add subdirectory for source files (your existing source code)
 add_subdirectory(src)
+
+# Swagger UI Integration (move it after defining the project target)
+include(ExternalProject)
+
+ExternalProject_Add(
+    swagger_ui
+    URL https://github.com/swagger-api/swagger-ui/archive/refs/tags/v4.19.0.zip
+    PREFIX ${CMAKE_BINARY_DIR}/swagger_ui
+    CONFIGURE_COMMAND ""
+    BUILD_COMMAND ""
+    INSTALL_COMMAND ""
+    LOG_DOWNLOAD ON
+)
+
+# Set the path where Swagger UI will be extracted
+set(SWAGGER_UI_DIR "${CMAKE_BINARY_DIR}/swagger_ui/src/swagger_ui/swagger-ui-4.19.0/dist")
+
+# Ensure Swagger UI is downloaded before the project is built
+add_custom_target(
+    prepare_swagger_ui
+    DEPENDS swagger_ui
+)
+
+# Link the swagger-ui path in your app's code (C++ part)
+add_definitions(-DSWAGGER_UI_PATH="${SWAGGER_UI_DIR}")
+
+# Add the dependency on prepare_swagger_ui to ensure Swagger UI is ready
+add_dependencies(${projectName} prepare_swagger_ui)

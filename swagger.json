@@ -1,0 +1,94 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "HorovyiBlockchain API",
+    "description": "API for managing HorovyiBlockchain",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080",
+      "description": "Local server"
+    }
+  ],
+  "paths": {
+    "/transactions/new": {
+      "post": {
+        "summary": "Create a new transaction",
+        "operationId": "createTransaction",
+        "requestBody": {
+          "description": "Transaction details",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Transaction"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Transaction will be added to Block",
+            "content": {
+              "application/json": {}
+            }
+          },
+          "400": {
+            "description": "Invalid transaction details"
+          }
+        }
+      }
+    },
+    "/mine": {
+      "get": {
+        "summary": "Mine a new block",
+        "operationId": "mineBlock",
+        "responses": {
+          "200": {
+            "description": "New Block Forged",
+            "content": {
+              "application/json": {}
+            }
+          },
+          "500": {
+            "description": "Mining failed"
+          }
+        }
+      }
+    },
+    "/chain": {
+      "get": {
+        "summary": "Get the full blockchain",
+        "operationId": "getBlockchain",
+        "responses": {
+          "200": {
+            "description": "Blockchain data",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Transaction": {
+        "type": "object",
+        "properties": {
+          "sender": {
+            "type": "string"
+          },
+          "recipient": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number"
+          }
+        },
+        "required": ["sender", "recipient", "amount"]
+      }
+    }
+  }
+}
